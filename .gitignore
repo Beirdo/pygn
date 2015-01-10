@@ -1,0 +1,3 @@
+dist/
+pygn.egg-info/
+*.pyc
