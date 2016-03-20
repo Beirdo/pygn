@@ -13,15 +13,15 @@ from __future__ import print_function
 import xml.etree.ElementTree, json
 
 try:
-    import urllib.request as urllib_request #for python 3
     import urllib.parse   as urllib_parse
-
 except ImportError:
-    import urllib2 as urllib_request # for python 2
     import urllib as urllib_parse # for python 2
+
+import requests
 
 # Set DEBUG to True if you want this module to print out the query and response XML
 DEBUG = False
+mySession = None
 
 class gnmetadata(dict):
 	"""
@@ -61,6 +61,10 @@ class gnmetadata(dict):
 		#  External IDs: Special content rights in license required
 		self['xid'] =''
 
+def setSession(session):
+	global mySession
+	mySession = session
+
 def register(clientID):
 	"""
 	This function registers an application as a user of the Gracenote service
@@ -84,8 +88,12 @@ def register(clientID):
 	queryXML = query.toString()
 	
 	# POST query
-	response = urllib_request.urlopen(_gnurl(clientID), queryXML)
-	responseXML = response.read()
+	if not mySession:
+		setSession(requests.session())
+	response = mySession.post(_gnurl(clientID), data=queryXML)
+	if response.status_code != 200:
+		return None
+	responseXML = response.text
 	
 	# Parse response
 	responseTree = xml.etree.ElementTree.fromstring(responseXML)
@@ -148,9 +156,12 @@ def createRadio(clientID='', userID='', artist='', track='', mood='', era='', ge
 		print(queryXML)
 
 	# POST query
-	response = urllib_request.urlopen(_gnurl(clientID), queryXML)
-	responseXML = response.read()
-
+	if not mySession:
+		setSession(requests.session())
+	response = mySession.post(_gnurl(clientID), data=queryXML)
+	if response.status_code != 200:
+		return None
+	responseXML = response.text
 
 	myPlaylist = []
 
@@ -208,9 +219,12 @@ def radioEvent(clientID='', userID='', radioID='', gnID='', event ='TRACK_PLAYED
 
 	
 	# POST query
-	response = urllib_request.urlopen(_gnurl(clientID), queryXML)
-	responseXML = response.read()
-
+	if not mySession:
+		setSession(requests.session())
+	response = mySession.post(_gnurl(clientID), data=queryXML)
+	if response.status_code != 200:
+		return None
+	responseXML = response.text
 
 	myPlaylist = []
 
@@ -270,8 +284,12 @@ def search(clientID='', userID='', artist='', album='', track='', toc=''):
 		print(queryXML)
 	
 	# POST query
-	response = urllib_request.urlopen(_gnurl(clientID), queryXML)
-	responseXML = response.read()
+	if not mySession:
+		setSession(requests.session())
+	response = mySession.post(_gnurl(clientID), data=queryXML)
+	if response.status_code != 200:
+		return None
+	responseXML = response.text
 	
 	if DEBUG:
 		print('------------')
@@ -464,8 +482,12 @@ def get_discography(clientID='', userID='', artist='', rangeStart=1, rangeEnd=10
 		print(queryXML)
 
 	# POST query
-	response = urllib_request.urlopen(_gnurl(clientID), queryXML)
-	responseXML = response.read()
+	if not mySession:
+		setSession(requests.session())
+	response = mySession.post(_gnurl(clientID), data=queryXML)
+	if response.status_code != 200:
+		return None
+	responseXML = response.text
 
 	if DEBUG:
 		print('------------')
@@ -565,8 +587,12 @@ def fetch(clientID='', userID='', GNID=''):
 		print(queryXML)
 	
 	# POST query
-	response = urllib_request.urlopen(_gnurl(clientID), queryXML)
-	responseXML = response.read()
+	if not mySession:
+		setSession(requests.session())
+	response = mySession.post(_gnurl(clientID), data=queryXML)
+	if response.status_code != 200:
+		return None
+	responseXML = response.text
 	
 	if DEBUG:
 		print('------------')
@@ -685,8 +711,12 @@ def _getOET(clientID, userID, GNID):
 		print(queryXML)
 	
 	# POST query
-	response = urllib_request.urlopen(_gnurl(clientID), queryXML)
-	albumXML = response.read()
+	if not mySession:
+		setSession(requests.session())
+	response = mySession.post(_gnurl(clientID), data=queryXML)
+	if response.status_code != 200:
+		return None
+	albumXML = response.text
 	
 	if DEBUG:
 		print('------------')
