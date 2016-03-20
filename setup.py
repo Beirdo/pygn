@@ -3,8 +3,6 @@
 import os
 import sys
 
-import pygn
-
 try:
     from setuptools import setup
 except ImportError:
@@ -14,7 +12,7 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-packages = [
+modules = [
     'pygn',
 ]
 
@@ -32,7 +30,7 @@ setup(
     long_description=readme + '\n\n',
     author='Ching-Wei Chen',
     url='https://github.com/cweichen/pygn',
-    py_modules=packages,
+    py_modules=modules,
     package_data={},
     package_dir={},
     include_package_data=True,
